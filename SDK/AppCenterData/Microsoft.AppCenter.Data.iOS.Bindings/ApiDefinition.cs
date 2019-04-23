@@ -26,20 +26,21 @@ namespace Microsoft.AppCenter.Data.iOS.Bindings
         [Export("setEnabled:")]
         void SetEnabled(bool isEnabled);
 
+        //TODO We will remove Class parameters from ios method definition.
         // + (void)readWithPartition:(NSString *)partition documentId:(NSString*) documentId documentType:(Class) documentType completionHandler:(MSDocumentWrapperCompletionHandler) completionHandler;
         [Static]
         [Export("readWithPartition:documentId:documentType:completionHandler:")]
-        void ReadWithPartition(string partition, string documentId, Type documentType, MSDocumentWrapperCompletionHandler completionHandler);
+        void ReadWithPartition(string partition, string documentId, MSDocumentWrapperCompletionHandler completionHandler);
 
         // + (void)readWithPartition:(NSString *)partition documentId:(NSString*) documentId documentType:(Class) documentType readOptions:(MSReadOptions *_Nullable)readOptions completionHandler:(MSDocumentWrapperCompletionHandler) completionHandler;
         [Static]
         [Export("readWithPartition:documentId:documentType:readOptions:completionHandler:")]
-        void ReadWithPartition(string partition, string documentId, Type documentType, [NullAllowed] MSReadOptions readOptions, MSDocumentWrapperCompletionHandler completionHandler);
+        void ReadWithPartition(string partition, string documentId, [NullAllowed] MSReadOptions readOptions, MSDocumentWrapperCompletionHandler completionHandler);
 
         // + (void)listWithPartition:(NSString *)partition documentType:(Class) documentType completionHandler:(MSPaginatedDocumentsCompletionHandler) completionHandler;
         [Static]
         [Export("listWithPartition:documentType:completionHandler:")]
-        void ListWithPartition(string partition, Type documentType, MSPaginatedDocumentsCompletionHandler completionHandler);
+        void ListWithPartition(string partition, MSPaginatedDocumentsCompletionHandler completionHandler);
 
         // + (void) createWithPartition:(NSString*) partition documentId:(NSString*) documentId document:(id<MSSerializableDocument>) document completionHandler:(MSDocumentWrapperCompletionHandler) completionHandler;
         [Static]
@@ -56,6 +57,7 @@ namespace Microsoft.AppCenter.Data.iOS.Bindings
         [Export("replaceWithPartition:documentId:document:completionHandler:")]
         void ReplaceWithPartition(string partition, string documentId, string document, MSDocumentWrapperCompletionHandler completionHandler);
 
+        //TODO We will pass document as string.
         // + (void) replaceWithPartition:(NSString*) partition documentId:(NSString*) documentId document:(id<MSSerializableDocument>) document writeOptions:(MSWriteOptions* _Nullable) writeOptions completionHandler:(MSDocumentWrapperCompletionHandler) completionHandler;
         [Static]
         [Export("replaceWithPartition:documentId:document:writeOptions:completionHandler:")]
@@ -129,6 +131,7 @@ namespace Microsoft.AppCenter.Data.iOS.Bindings
         [Export("jsonValue")]
         string JsonValue { get; set; }
 
+        //TODO We will return document as string.
         // @property(nonatomic, strong, readonly) id<MSSerializableDocument> deserializedValue;
         [Export("deserializedValue")]
         string DeserializedValue { get; set; }
