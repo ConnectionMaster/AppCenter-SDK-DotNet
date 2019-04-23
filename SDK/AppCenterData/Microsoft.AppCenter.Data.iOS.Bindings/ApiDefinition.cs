@@ -33,8 +33,8 @@ namespace Microsoft.AppCenter.Data.iOS.Bindings
 
         // + (void)readWithPartition:(NSString *)partition documentId:(NSString*) documentId documentType:(Class) documentType readOptions:(MSReadOptions *_Nullable)readOptions completionHandler:(MSDocumentWrapperCompletionHandler) completionHandler;
         [Static]
-        [Export("readWithPartition:documentId:documentType:completionHandler:")]
-        void ReadWithPartition(string partition, string documentId, Type documentType, MSReadOptions readOptions, MSDocumentWrapperCompletionHandler completionHandler);
+        [Export("readWithPartition:documentId:documentType:readOptions:completionHandler:")]
+        void ReadWithPartition(string partition, string documentId, Type documentType, [NullAllowed] MSReadOptions readOptions, MSDocumentWrapperCompletionHandler completionHandler);
 
         // + (void)listWithPartition:(NSString *)partition documentType:(Class) documentType completionHandler:(MSPaginatedDocumentsCompletionHandler) completionHandler;
         [Static]
@@ -49,7 +49,7 @@ namespace Microsoft.AppCenter.Data.iOS.Bindings
         // + (void) createWithPartition:(NSString*) partition documentId:(NSString*) documentId document:(id<MSSerializableDocument>) document writeOptions:(MSWriteOptions* _Nullable) writeOptions completionHandler:(MSDocumentWrapperCompletionHandler) completionHandler;
         [Static]
         [Export("createWithPartition:documentId:document:writeOptions:completionHandler:")]
-        void CreateWithPartition(string partition, string documentId, string document, MSWriteOptions writeOptions, MSDocumentWrapperCompletionHandler completionHandler);
+        void CreateWithPartition(string partition, string documentId, string document, [NullAllowed] MSWriteOptions writeOptions, MSDocumentWrapperCompletionHandler completionHandler);
 
         // + (void) replaceWithPartition:(NSString*) partition documentId:(NSString*) documentId document:(id<MSSerializableDocument>) document completionHandler:(MSDocumentWrapperCompletionHandler) completionHandler;
         [Static]
@@ -59,7 +59,7 @@ namespace Microsoft.AppCenter.Data.iOS.Bindings
         // + (void) replaceWithPartition:(NSString*) partition documentId:(NSString*) documentId document:(id<MSSerializableDocument>) document writeOptions:(MSWriteOptions* _Nullable) writeOptions completionHandler:(MSDocumentWrapperCompletionHandler) completionHandler;
         [Static]
         [Export("replaceWithPartition:documentId:document:writeOptions:completionHandler:")]
-        void ReplaceWithPartition(string partition, string documentId, string document, MSWriteOptions writeOptions, MSDocumentWrapperCompletionHandler completionHandler);
+        void ReplaceWithPartition(string partition, string documentId, string document, [NullAllowed] MSWriteOptions writeOptions, MSDocumentWrapperCompletionHandler completionHandler);
 
         // + (void)deleteWithPartition:(NSString *)partition documentId:(NSString*) documentId completionHandler:(MSDocumentWrapperCompletionHandler) completionHandler;
         [Static]
@@ -69,7 +69,33 @@ namespace Microsoft.AppCenter.Data.iOS.Bindings
         // + (void) deleteWithPartition:(NSString*) partition documentId:(NSString*) documentId writeOptions:(MSWriteOptions* _Nullable) writeOptions completionHandler:(MSDocumentWrapperCompletionHandler) completionHandler;
         [Static]
         [Export("deleteWithPartition:documentId:writeOptions:completionHandler:")]
-        void DeleteWithPartition(string partition, string documentId, MSWriteOptions writeOptions, MSDocumentWrapperCompletionHandler completionHandler);
+        void DeleteWithPartition(string partition, string documentId, [NullAllowed] MSWriteOptions writeOptions, MSDocumentWrapperCompletionHandler completionHandler);
+    }
+
+    // @interface MSDataSourceError : NSObject
+    [BaseType(typeof(NSObject))]
+    interface MSDataSourceError
+    {
+        // @property(nonatomic, strong, readonly) NSError *error;
+        [Export("error")]
+        NSError Error();
+
+        // @property(nonatomic, readonly) NSInteger errorCode;
+        [Export("errorCode")]
+        IntPtr ErrorCode();
+    }
+
+    // @interface MSPage : NSObject
+    [BaseType(typeof(NSObject))]
+    interface MSPage
+    {
+        // @property(nonatomic, strong, readonly) NSError *error;
+        [Export("error")]
+        NSError Error();
+
+        // @property(readonly) NSArray<MSDocumentWrapper *> *items;
+        [Export("items")]
+        MSDocumentWrapper[] Items();
     }
 
     // @interface MSReadOptions : MSBaseOptions
@@ -146,33 +172,7 @@ namespace Microsoft.AppCenter.Data.iOS.Bindings
 
         // - (void) nextPageWithCompletionHandler:(void (^)(MSPage* page))completionHandler;
         [Export("nextPageWithCompletionHandler:")]
-        bool NextPageWithCompletionHandler(NextPageCompletionHandler handler);
-    }
-
-    // @interface MSDataSourceError : NSObject
-    [BaseType(typeof(NSObject))]
-    interface MSDataSourceError
-    {
-        // @property(nonatomic, strong, readonly) NSError *error;
-        [Export("error")]
-        NSError Error();
-
-        // @property(nonatomic, readonly) NSInteger errorCode;
-        [Export("errorCode")]
-        IntPtr ErrorCode();
-    }
-
-    // @interface MSPage : NSObject
-    [BaseType(typeof(NSObject))]
-    interface MSPage
-    {
-        // @property(nonatomic, strong, readonly) NSError *error;
-        [Export("error")]
-        NSError Error();
-
-        // @property(readonly) NSArray<MSDocumentWrapper *> *items;
-        [Export("items")]
-        MSDocumentWrapper[] Items();
+        void NextPageWithCompletionHandler(NextPageCompletionHandler handler);
     }
 
     delegate void NextPageCompletionHandler(MSPage page);
