@@ -15,6 +15,8 @@ namespace Contoso.Android.Puppet
 
     public class AppCenterFragment : PageFragment
     {
+        const string LogTag = "AppCenterXamarinPuppet";
+
         private static readonly IDictionary<LogLevel, Action<string, string>> LogFunctions = new Dictionary<LogLevel, Action<string, string>> {
             { LogLevel.Verbose, AppCenterLog.Verbose },
             { LogLevel.Debug, AppCenterLog.Debug },
@@ -32,6 +34,7 @@ namespace Contoso.Android.Puppet
         private LogLevel mLogWriteLevel = LogLevel.Verbose;
 
         private Switch AppCenterEnabledSwitch;
+        private Switch AppCenterNetworkRequestsAllowedSwitch;
         private TextView LogLevelLabel;
         private EditText LogWriteMessageText;
         private EditText LogWriteTagText;
@@ -52,6 +55,7 @@ namespace Contoso.Android.Puppet
 
             // Find views.
             AppCenterEnabledSwitch = view.FindViewById(Resource.Id.enabled_app_center) as Switch;
+            AppCenterNetworkRequestsAllowedSwitch = view.FindViewById(Resource.Id.appcenter_network_requests_allowed) as Switch;
             LogLevelLabel = view.FindViewById(Resource.Id.log_level) as TextView;
             LogWriteMessageText = view.FindViewById(Resource.Id.write_log_message) as EditText;
             LogWriteTagText = view.FindViewById(Resource.Id.write_log_tag) as EditText;
@@ -63,6 +67,7 @@ namespace Contoso.Android.Puppet
 
             // Subscribe to events.
             AppCenterEnabledSwitch.CheckedChange += UpdateEnabled;
+            AppCenterNetworkRequestsAllowedSwitch.CheckedChange += NetworkRequestAllowedChange;
             ((View)LogLevelLabel.Parent).Click += LogLevelClicked;
             ((View)LogWriteLevelLabel.Parent).Click += LogWriteLevelClicked;
             LogWriteButton.Click += WriteLog;
@@ -84,6 +89,9 @@ namespace Contoso.Android.Puppet
             AppCenterEnabledSwitch.CheckedChange -= UpdateEnabled;
             AppCenterEnabledSwitch.Checked = await AppCenter.IsEnabledAsync();
             AppCenterEnabledSwitch.CheckedChange += UpdateEnabled;
+            AppCenterNetworkRequestsAllowedSwitch.CheckedChange -= NetworkRequestAllowedChange;
+            AppCenterNetworkRequestsAllowedSwitch.Checked = AppCenter.IsNetworkRequestsAllowed;
+            AppCenterNetworkRequestsAllowedSwitch.CheckedChange += NetworkRequestAllowedChange;
             LogLevelLabel.Text = LogLevelNames[AppCenter.LogLevel];
             LogWriteLevelLabel.Text = LogLevelNames[mLogWriteLevel];
         }
@@ -113,6 +121,11 @@ namespace Contoso.Android.Puppet
         {
             await AppCenter.SetEnabledAsync(e.IsChecked);
             AppCenterEnabledSwitch.Checked = await AppCenter.IsEnabledAsync();
+        }
+
+        private void NetworkRequestAllowedChange(object sender, CompoundButton.CheckedChangeEventArgs e)
+        {
+            AppCenter.IsNetworkRequestsAllowed = e.IsChecked;
         }
 
         private void LogLevelClicked(object sender, EventArgs e)
@@ -146,12 +159,18 @@ namespace Contoso.Android.Puppet
         private void SaveStorageSize(object sender, EventArgs e)
         {
             var inputText = StorageSizeText.Text;
-            var size = string.IsNullOrEmpty(inputText) ? 0 : long.Parse(inputText);
-            AppCenter.SetMaxStorageSizeAsync(size);
-            var prefs = Context.GetSharedPreferences("AppCenter", FileCreationMode.Private);
-            var prefEditor = prefs.Edit();
-            prefEditor.PutLong(Constants.StorageSizeKey, size);
-            prefEditor.Commit();
+            if (long.TryParse(inputText, out var result))
+            {
+                AppCenter.SetMaxStorageSizeAsync(result);
+                var prefs = Context.GetSharedPreferences("AppCenter", FileCreationMode.Private);
+                var prefEditor = prefs.Edit();
+                prefEditor.PutLong(Constants.StorageSizeKey, result);
+                prefEditor.Commit();
+            }
+            else
+            {
+                AppCenterLog.Error(LogTag, "Wrong number value for the max storage size.");
+            }
         }
     }
 }
